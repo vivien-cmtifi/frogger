@@ -112,11 +112,11 @@ window.requestAnimationFrame = (function(){
         _highScore = 1000,
 
         // Define the number of lives the player has remaining before the game is over
-        _lives = 5,
+        _lives = 3,
 
         // Define the number of milliseconds the player has to get their character to
-        // the goal (60 seconds). If they take too long, they will lose a life
-        _timeTotal = 60000,
+        // the goal (30 seconds). If they take too long, they will lose a life
+        _timeTotal = 30000,
 
         // Define a variable to store the current time remaining for the player to reach
         // the goal
@@ -257,7 +257,9 @@ window.requestAnimationFrame = (function(){
     function playerAtGoal() {
 
         // When the player reaches the goal, increase their score by 1000 points
-        increaseScore(1000);
+        const pointsFromTime = Math.round(_timeRemaining/100*1.5);
+        console.log(pointsFromTime);
+        increaseScore(pointsFromTime);
 
         // Increment the value indicating the total number of times the player's character
         // has reached the goal
@@ -282,9 +284,9 @@ window.requestAnimationFrame = (function(){
     }
 
     // Define a function to execute when the player moves their character on the game
-    // board, increasing their score by 20 points when they do
+    // board, increasing their score by 5 points when they do
     function playerMoved() {
-        increaseScore(20);
+        increaseScore(5);
     }
 
     // Define a function to be called when the game board needs to be reset, such as when
@@ -1065,9 +1067,9 @@ Frogger.ImageSprite.prototype = {
             // image so they sit right beside each other
             new Life(0, lifePositionTop),
             new Life(1 * Life.prototype.width, lifePositionTop),
-            new Life(2 * Life.prototype.width, lifePositionTop),
-            new Life(3 * Life.prototype.width, lifePositionTop),
-            new Life(4 * Life.prototype.width, lifePositionTop)
+            new Life(2 * Life.prototype.width, lifePositionTop)
+            // new Life(3 * Life.prototype.width, lifePositionTop),
+            // new Life(4 * Life.prototype.width, lifePositionTop)
         ];
 
         // Listen for the "render-base-layer" event fired from within the game loop and
@@ -1607,13 +1609,15 @@ Frogger.Character = (function(Frogger) {
                 _character.moveRight();
             } else if (characterDirection === Frogger.direction.UP) {
                 _character.moveUp();
+                // Publish an event to the rest of the code modules, indicating that the
+                // player's position has been moved by the player in the UP direction
+                Frogger.observer.publish("player-moved");
             } else if (characterDirection === Frogger.direction.DOWN) {
                 _character.moveDown();
+                // Publish an event to the rest of the code modules, indicating that the
+                // player's position has been moved by the player in the UP direction
+                Frogger.observer.publish("player-moved");
             }
-
-            // Publish an event to the rest of the code modules, indicating that the
-            // player's position has been moved by the player
-            Frogger.observer.publish("player-moved");
         }
     }
 
@@ -2021,7 +2025,7 @@ Frogger.Row = (function() {
                 speed: 5,
 
                 // Add three medium-sized log obstacles to the game board, spaced out evenly
-                obstacles: [new Frogger.Image.MediumLog(_gameBoard.columns[1]), new Frogger.Image.MediumLog(_gameBoard.columns[6]), new Frogger.Image.MediumLog(_gameBoard.columns[10])]
+                obstacles: [new Frogger.Image.MediumLog(_gameBoard.columns[1]), new Frogger.Image.MediumLog(_gameBoard.columns[5]), new Frogger.Image.MediumLog(_gameBoard.columns[10])]
             }),
 
             // Add a row of turtles, grouped in twos, on the 5th row of the game board,
@@ -2078,7 +2082,7 @@ Frogger.Row = (function() {
             new Frogger.Row.Road({
                 top: _gameBoard.rows[10],
                 direction: Frogger.direction.RIGHT,
-                speed: 12,
+                speed: 14,
                 obstacles: [new Frogger.Image.TurboRaceCar(_gameBoard.columns[1]), new Frogger.Image.TurboRaceCar(_gameBoard.columns[7])]
             }),
 
@@ -2093,7 +2097,7 @@ Frogger.Row = (function() {
             new Frogger.Row.Road({
                 top: _gameBoard.rows[12],
                 direction: Frogger.direction.RIGHT,
-                speed: 3,
+                speed: 6,
                 obstacles: [new Frogger.Image.Bulldozer(_gameBoard.columns[1]), new Frogger.Image.Bulldozer(_gameBoard.columns[7])]
             }),
 
